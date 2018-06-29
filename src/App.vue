@@ -1,20 +1,21 @@
 <template lang="pug">
   #app
-    img(src='./assets/logo.png')
     h1 Lista Musical con Vuejs
     select(v-model="selectedCountry")
       option(v-for="country in countries" :value="country.value") {{ country.name }}
+    spinner(v-show="loading")
     ul
       artist(v-for="artist in artists" :artist="artist" :key="artist.mbid")
   </template>
 
 <script>
 import Artist from './components/Artist.vue';
+import Spinner from './components/Spinner.vue'
 import getArtists from './api';
 
 export default {
   name: 'app',
-  components: {Artist},
+  components: {Artist, Spinner},
   data () {
     return {
       artists:[],
@@ -25,17 +26,20 @@ export default {
         {name:"Japón", value:"japan"},
         {name:"Perú", value:"peru"},
       ],
-      selectedCountry:"argentina"
+      selectedCountry:"argentina",
+      loading:"true"
     }
   },
   methods:{
     refreshArtist (){
-      console.log(this.selectedCountry)
       const self = this;
+      this.loading = true;
+      this.artists = [];
       getArtists(this.selectedCountry)
-      .then((artists) => {
-        self.artists = artists;
-      });
+        .then((artists) => {
+          self.loading = false;
+          self.artists = artists;
+        });
     }
   },
   mounted() {
@@ -71,4 +75,6 @@ li
 
 a
   color #42b983
+select
+  outline none
 </style>
